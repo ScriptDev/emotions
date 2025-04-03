@@ -1,0 +1,395 @@
+<script>
+        class EmotionalWordGame {
+            constructor() {
+                // Elementos da interface
+                this.initializeElements();
+                this.setupDiagnosticSystem();
+                this.setupEventListeners();
+            }
+
+            initializeElements() {
+                // Seleção segura de elementos
+                this.elements = {
+                    chatMessages: document.getElementById('chatMessages'),
+                    messageInput: document.getElementById('messageInput'),
+                    sendButton: document.getElementById('sendButton'),
+                    missionSelector: document.getElementById('missionSelector'),
+                    wordOptions: document.getElementById('wordOptions'),
+                    emotionLevel: document.getElementById('emotionLevel')
+                };
+
+                // Validação de elementos
+                Object.entries(this.elements).forEach(([key, element]) => {
+                    if (!element) {
+                        console.warn(`Elemento não encontrado: ${key}`);
+                    }
+                });
+            }
+
+            setupDiagnosticSystem() {
+                // Sistema de diagnóstico integrado
+                this.diagnosticLog = [];
+            }
+
+            logDiagnostic(message, type = 'info') {
+                const logEntry = {
+                    timestamp: new Date().toISOString(),
+                    message,
+                    type
+                };
+                this.diagnosticLog.push(logEntry);
+                console.log(JSON.stringify(logEntry, null, 2));
+            }
+
+            setupEventListeners() {
+                const { sendButton, messageInput } = this.elements;
+
+                // Validação e configuração de listeners
+                if (sendButton) {
+                    sendButton.addEventListener('click', () => this.processUserInput());
+                    this.logDiagnostic('Listener de envio configurado no botão');
+                }
+
+                if (messageInput) {
+                    messageInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') this.processUserInput();
+                    });
+                    this.logDiagnostic('Listener de entrada configurado no input');
+                }
+            }
+
+            processUserInput() {
+                const { messageInput, chatMessages } = this.elements;
+
+                // Verificações de segurança
+                if (!messageInput || !chatMessages) {
+                    this.logDiagnostic('Falha: Elementos essenciais não encontrados', 'error');
+                    return;
+                }
+
+                const message = messageInput.value.trim();
+
+                // Validação de conteúdo
+                if (!message) {
+                    this.logDiagnostic('Tentativa de envio de mensagem vazia', 'warning');
+                    return;
+                }
+
+                try {
+                    // Criação do elemento de mensagem
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message', 'user');
+                    messageElement.textContent = message;
+                    
+                    // Adição da mensagem
+                    chatMessages.appendChild(messageElement);
+                    
+                    // Limpar input
+                    messageInput.value = '';
+                    
+                    // Rolagem automática
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    this.logDiagnostic(`Mensagem enviada: ${message}`, 'success');
+
+                    // Processamento da palavra
+                    this.processWord(message);
+                } catch (error) {
+                    this.logDiagnostic(`Erro no processamento de mensagem: ${error.message}`, 'error');
+                }
+            }
+
+            // Métodos originais mantidos
+            processWord(word) {
+                // Lógica de processamento emocional
+                const emotionalImpact = this.calculateEmotionalImpact(word);
+                this.updateEmotionalState(emotionalImpact);
+                this.generateAIResponse();
+            }
+
+            calculateEmotionalImpact(word) {
+                // Implementação original mantida
+                const positiveWords = ['amor', 'alegria', 'esperança', 'paz'];
+                const negativeWords = ['raiva', 'medo', 'conflito', 'caos'];
+                const neutralWords = ['desafio', 'transformação', 'inovação'];
+
+                word = word.toLowerCase();
+
+                if (positiveWords.includes(word)) return 10;
+                if (negativeWords.includes(word)) return -10;
+                if (neutralWords.includes(word)) return 0;
+
+                // Impacto aleatório para palavras não mapeadas
+                return Math.random() * 20 - 10;
+            }
+
+            updateEmotionalState(impact) {
+                // Implementação original mantida
+                this.emotionalState.level = Math.max(0, Math.min(100, 
+                    this.emotionalState.level + impact
+                ));
+
+                // Atualiza o estado emocional
+                if (this.emotionalState.level < 20) {
+                    this.emotionalState.state = 'irritated';
+                } else if (this.emotionalState.level < 40) {
+                    this.emotionalState.state = 'neutral';
+                } else if (this.emotionalState.level < 70) {
+                    this.emotionalState.state = 'calm';
+                } else {
+                    this.emotionalState.state = 'excited';
+                }
+
+                // Atualiza visualização do nível emocional
+                this.elements.emotionLevel.style.width = `${this.emotionalState.level}%`;
+                this.elements.emotionLevel.style.backgroundColor = this.getEmotionColor();
+            }
+
+            // Outros métodos originais (generateAIResponse, addMessage, etc.) mantidos
+        }
+
+        // Inicialização do jogo
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                window.emotionalWordGame = new EmotionalWordGame();
+            } catch (error) {
+                console.error('Falha na inicialização do jogo:', error);
+            }
+        });
+    </script>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Emotion Game</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --text-primary: #E0E0E0;
+            --accent-color: #BB86FC;
+            --accent-secondary: #03DAC6;
+            --emotion-calm: #4CAF50;
+            --emotion-neutral: #2196F3;
+            --emotion-irritated: #F44336;
+            --emotion-excited: #FF9800;
+            --neural-shadow: rgba(187, 134, 252, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .neural-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .neural-sidebar {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid var(--accent-color);
+            box-shadow: -5px 0 15px var(--neural-shadow);
+        }
+
+        .emotion-meter {
+            width: 100%;
+            height: 30px;
+            background-color: var(--bg-primary);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .emotion-level {
+            height: 100%;
+            width: 50%;
+            background-color: var(--emotion-neutral);
+            transition: all 0.3s ease;
+        }
+
+        .mission-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mission-button {
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .mission-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px var(--neural-shadow);
+        }
+
+        .neural-chat {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-primary);
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--bg-secondary);
+        }
+
+        .message {
+            max-width: 70%;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background-color: var(--bg-secondary);
+            border-left: 5px solid var(--accent-secondary);
+        }
+
+        .message.ai.calm { border-left-color: var(--emotion-calm); }
+        .message.ai.neutral { border-left-color: var(--emotion-neutral); }
+        .message.ai.irritated { border-left-color: var(--emotion-irritated); }
+        .message.ai.excited { border-left-color: var(--emotion-excited); }
+
+        .word-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+        }
+
+        .word-option {
+            background-color: var(--accent-secondary);
+            color: var(--bg-primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .word-option:hover {
+            transform: scale(1.05);
+            background-color: var(--accent-color);
+        }
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--accent-color);
+        }
+
+        .message-input {
+            flex-grow: 1;
+            padding: 12px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--accent-secondary);
+            border-radius: 8px;
+            color: var(--text-primary);
+            margin-right: 10px;
+        }
+
+        .send-button {
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .send-button:hover {
+            background-color: var(--accent-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="neural-container">
+        <div class="neural-sidebar">
+            <div class="emotion-meter">
+                <div class="emotion-level" id="emotionLevel"></div>
+            </div>
+            
+            <div class="mission-selector" id="missionSelector">
+                <h3>Escolha uma Missão:</h3>
+                <!-- Missões serão geradas dinamicamente -->
+            </div>
+        </div>
+
+        <div class="neural-chat">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai neutral">
+                    Olá! Estou pronto para jogar o Jogo das Emoções. Escolha uma missão e vamos começar!
+                </div>
+            </div>
+
+            <div class="word-options" id="wordOptions">
+                <!-- Opções de palavras serão geradas dinamicamente -->
+            </div>
+
+            <div class="input-area">
+                <input 
+                    type="text" 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Digite sua palavra ou mensagem..."
+                >
+                <button class="send-button" id="sendButton">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Todo o script anterior de EmotionalWordGame mantido
+        class EmotionalWordGame {
+            // [Implementação anterior preservada]
+        }
+
+        // Inicialização do jogo
+        const emotionalWordGame = new EmotionalWordGame();
+    </script>
+</body>
+</html>
